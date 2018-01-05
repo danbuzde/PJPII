@@ -40,6 +40,9 @@ const int PRZESZKODA14_H = 0.25 * SCREEN_H;
 const int PRZESZKODA15_W = 0.125 * SCREEN_W;
 const int PRZESZKODA15_H = 5;
 
+const int META_W = 0.125 * SCREEN_W;
+const int META_H = 5;
+
 
 
 enum MYKEYS { KEY_LEFT, KEY_RIGHT, KEY_SPACE };
@@ -96,6 +99,9 @@ int przeszkoda14_y = 0;
 int przeszkoda15_x = 0;
 int przeszkoda15_y = 0;
 
+int meta_x = 0;
+int meta_y = 0;
+
 int points = 0;
 int moneta_x = 0;
 int moneta_y = 0;
@@ -107,6 +113,8 @@ int moneta4_x = 0;
 int moneta4_y = 0;
 int moneta5_x = 0;
 int moneta5_y = 0;
+int moneta6_x = 0;
+int moneta6_y = 0;
 
 
 double tab_sin[72];
@@ -168,12 +176,14 @@ int main()
 	ALLEGRO_BITMAP *przeszkoda14 = NULL;
 	ALLEGRO_BITMAP *przeszkoda15 = NULL;
 
+	ALLEGRO_BITMAP *meta = NULL;
+
 	ALLEGRO_BITMAP *moneta = NULL;
 	ALLEGRO_BITMAP *moneta2 = NULL;
 	ALLEGRO_BITMAP *moneta3 = NULL;
 	ALLEGRO_BITMAP *moneta4 = NULL;
 	ALLEGRO_BITMAP *moneta5 = NULL;
-	
+	ALLEGRO_BITMAP *moneta6 = NULL;
 
 	ziem_x = SCREEN_W / 10;
 	ziem_y = SCREEN_H / 10;
@@ -215,20 +225,27 @@ int main()
 	przeszkoda15_x = 0;
 	przeszkoda15_y = 0.25 * SCREEN_H;
 
+	meta_x = 0;
+	meta_y = (SCREEN_H / 4) + 5;
+
+
 	moneta_x = SCREEN_W / 3;
 	moneta_y = SCREEN_H / 3;
-	
+
 	moneta2_x = przeszkoda2_x + 60;
 	moneta2_y = 60;
-	
+
 	moneta3_x = SCREEN_W - 100;
 	moneta3_y = SCREEN_H - 100;
-	
+
 	moneta4_x = (0.75 * SCREEN_W) + 50;
 	moneta4_y = (0.5 * SCREEN_H) + 100;
 
 	moneta5_x = 0.625 * SCREEN_W;
 	moneta5_y = 0.875 * SCREEN_H;
+
+	moneta6_x = 0.5 * (przeszkoda10_x + przeszkoda11_x);
+	moneta6_y = 0.5 * (przeszkoda10_y + przeszkoda12_y);
 
 	bool redraw = true;
 	bool doexit = false;
@@ -346,14 +363,14 @@ int main()
 		al_destroy_display(display);
 		al_destroy_timer(timer);
 		return -1;
-	}	
+	}
 	przeszkoda11 = al_create_bitmap(PRZESZKODA10_W, PRZESZKODA10_H);
 	if (!przeszkoda11) {
 		fprintf(stderr, "failed to create przeszkoda11 bitmap!\n");
 		al_destroy_display(display);
 		al_destroy_timer(timer);
 		return -1;
-	}	
+	}
 	przeszkoda12 = al_create_bitmap(PRZESZKODA10_W, PRZESZKODA10_H);
 	if (!przeszkoda12) {
 		fprintf(stderr, "failed to create przeszkoda12 bitmap!\n");
@@ -382,18 +399,26 @@ int main()
 		al_destroy_timer(timer);
 		return -1;
 	}
+	meta = al_create_bitmap(META_W, META_H);
+	if (!meta) {
+		fprintf(stderr, "failed to create meta bitmap!\n");
+		al_destroy_display(display);
+		al_destroy_timer(timer);
+		return -1;
+	}
 	/*	moneta = al_create_bitmap(MONETA_W, MONETA_H);
 	if (!moneta) {
 	fprintf(stderr, "failed to create moneta bitmap!\n");
 	al_destroy_display(display);
 	al_destroy_timer(timer);
 	return -1;
-	}*/  
+	}*/
 	moneta = al_load_bitmap("moneta.bmp");
 	moneta2 = al_load_bitmap("moneta.bmp");
 	moneta3 = al_load_bitmap("moneta.bmp");
 	moneta4 = al_load_bitmap("moneta.bmp");
 	moneta5 = al_load_bitmap("moneta.bmp");
+	moneta6 = al_load_bitmap("moneta.bmp");
 
 
 	al_set_target_bitmap(ziemniak);
@@ -435,11 +460,11 @@ int main()
 	al_set_target_bitmap(przeszkoda9);
 	al_clear_to_color(al_map_rgb(1, 255, 200));
 	al_set_target_bitmap(al_get_backbuffer(display));
-	
+
 	al_set_target_bitmap(przeszkoda10);
 	al_clear_to_color(al_map_rgb(1, 255, 200));
 	al_set_target_bitmap(al_get_backbuffer(display));
-	
+
 	al_set_target_bitmap(przeszkoda11);
 	al_clear_to_color(al_map_rgb(1, 255, 200));
 	al_set_target_bitmap(al_get_backbuffer(display));
@@ -451,13 +476,17 @@ int main()
 	al_set_target_bitmap(przeszkoda13);
 	al_clear_to_color(al_map_rgb(1, 255, 200));
 	al_set_target_bitmap(al_get_backbuffer(display));
-	
+
 	al_set_target_bitmap(przeszkoda14);
 	al_clear_to_color(al_map_rgb(1, 255, 200));
 	al_set_target_bitmap(al_get_backbuffer(display));
-	
+
 	al_set_target_bitmap(przeszkoda15);
 	al_clear_to_color(al_map_rgb(1, 255, 200));
+	al_set_target_bitmap(al_get_backbuffer(display));
+
+	al_set_target_bitmap(meta);
+	al_clear_to_color(al_map_rgb(255, 0, 0));
 	al_set_target_bitmap(al_get_backbuffer(display));
 
 
@@ -481,11 +510,13 @@ int main()
 		al_destroy_bitmap(przeszkoda13);
 		al_destroy_bitmap(przeszkoda14);
 		al_destroy_bitmap(przeszkoda15);
+		al_destroy_bitmap(meta);
 		al_destroy_bitmap(moneta);
 		al_destroy_bitmap(moneta2);
 		al_destroy_bitmap(moneta3);
 		al_destroy_bitmap(moneta4);
 		al_destroy_bitmap(moneta5);
+		al_destroy_bitmap(moneta6);
 		al_destroy_display(display);
 		al_destroy_timer(timer);
 		return -1;
@@ -535,21 +566,19 @@ int main()
 				//al_rest(5);
 				ziem_x = SCREEN_W / 20;
 				ziem_y = SCREEN_H / 20;
-			
+
 				moneta_x = SCREEN_W / 3;
 				moneta_y = SCREEN_H / 3;
-
 				moneta2_x = przeszkoda2_x + 60;
 				moneta2_y = 60;
-
 				moneta3_x = SCREEN_W - 100;
 				moneta3_y = SCREEN_H - 100;
-
 				moneta4_x = (0.75 * SCREEN_W) + 50;
 				moneta4_y = (0.5 * SCREEN_H) + 100;
-
 				moneta5_x = 0.625 * SCREEN_W;
 				moneta5_y = 0.875 * SCREEN_H;
+				moneta6_x = 0.5 * (przeszkoda10_x + przeszkoda11_x);
+				moneta6_y = 0.5 * (przeszkoda10_y + przeszkoda12_y);
 
 				key[KEY_SPACE] = false;
 				redraw = true;
@@ -596,6 +625,15 @@ int main()
 				redraw = true;
 			}
 
+			if (ziem_x >= moneta6_x && ziem_x <= (moneta6_x + MONETA_W) && ziem_y >= moneta6_y && ziem_y <= (moneta6_y + MONETA_H))
+			{
+				points++;
+				moneta6_x = SCREEN_W + 100;
+				moneta6_y = SCREEN_H + 100;
+
+				redraw = true;
+			}
+
 			if (ziem_x >= przeszkoda_x &&
 				ziem_x <= (przeszkoda_x + PRZESZKODA_W) &&
 				ziem_y >= przeszkoda_y &&
@@ -617,6 +655,8 @@ int main()
 				moneta4_y = (0.5 * SCREEN_H) + 100;
 				moneta5_x = 0.625 * SCREEN_W;
 				moneta5_y = 0.875 * SCREEN_H;
+				moneta6_x = 0.5 * (przeszkoda10_x + przeszkoda11_x);
+				moneta6_y = 0.5 * (przeszkoda10_y + przeszkoda12_y);
 
 				key[KEY_SPACE] = false;
 				redraw = true;
@@ -642,6 +682,8 @@ int main()
 				moneta4_y = (0.5 * SCREEN_H) + 100;
 				moneta5_x = 0.625 * SCREEN_W;
 				moneta5_y = 0.875 * SCREEN_H;
+				moneta6_x = 0.5 * (przeszkoda10_x + przeszkoda11_x);
+				moneta6_y = 0.5 * (przeszkoda10_y + przeszkoda12_y);
 
 				key[KEY_SPACE] = false;
 				redraw = true;
@@ -667,6 +709,8 @@ int main()
 				moneta4_y = (0.5 * SCREEN_H) + 100;
 				moneta5_x = 0.625 * SCREEN_W;
 				moneta5_y = 0.875 * SCREEN_H;
+				moneta6_x = 0.5 * (przeszkoda10_x + przeszkoda11_x);
+				moneta6_y = 0.5 * (przeszkoda10_y + przeszkoda12_y);
 
 				key[KEY_SPACE] = false;
 				redraw = true;
@@ -692,6 +736,8 @@ int main()
 				moneta4_y = (0.5 * SCREEN_H) + 100;
 				moneta5_x = 0.625 * SCREEN_W;
 				moneta5_y = 0.875 * SCREEN_H;
+				moneta6_x = 0.5 * (przeszkoda10_x + przeszkoda11_x);
+				moneta6_y = 0.5 * (przeszkoda10_y + przeszkoda12_y);
 
 				key[KEY_SPACE] = false;
 				redraw = true;
@@ -717,7 +763,9 @@ int main()
 				moneta4_y = (0.5 * SCREEN_H) + 100;
 				moneta5_x = 0.625 * SCREEN_W;
 				moneta5_y = 0.875 * SCREEN_H;
-			
+				moneta6_x = 0.5 * (przeszkoda10_x + przeszkoda11_x);
+				moneta6_y = 0.5 * (przeszkoda10_y + przeszkoda12_y);
+
 				key[KEY_SPACE] = false;
 				redraw = true;
 			}
@@ -742,6 +790,8 @@ int main()
 				moneta4_y = (0.5 * SCREEN_H) + 100;
 				moneta5_x = 0.625 * SCREEN_W;
 				moneta5_y = 0.875 * SCREEN_H;
+				moneta6_x = 0.5 * (przeszkoda10_x + przeszkoda11_x);
+				moneta6_y = 0.5 * (przeszkoda10_y + przeszkoda12_y);
 
 				key[KEY_SPACE] = false;
 				redraw = true;
@@ -767,6 +817,8 @@ int main()
 				moneta4_y = (0.5 * SCREEN_H) + 100;
 				moneta5_x = 0.625 * SCREEN_W;
 				moneta5_y = 0.875 * SCREEN_H;
+				moneta6_x = 0.5 * (przeszkoda10_x + przeszkoda11_x);
+				moneta6_y = 0.5 * (przeszkoda10_y + przeszkoda12_y);
 
 				key[KEY_SPACE] = false;
 				redraw = true;
@@ -792,6 +844,8 @@ int main()
 				moneta4_y = (0.5 * SCREEN_H) + 100;
 				moneta5_x = 0.625 * SCREEN_W;
 				moneta5_y = 0.875 * SCREEN_H;
+				moneta6_x = 0.5 * (przeszkoda10_x + przeszkoda11_x);
+				moneta6_y = 0.5 * (przeszkoda10_y + przeszkoda12_y);
 
 				key[KEY_SPACE] = false;
 				redraw = true;
@@ -817,6 +871,8 @@ int main()
 				moneta4_y = (0.5 * SCREEN_H) + 100;
 				moneta5_x = 0.625 * SCREEN_W;
 				moneta5_y = 0.875 * SCREEN_H;
+				moneta6_x = 0.5 * (przeszkoda10_x + przeszkoda11_x);
+				moneta6_y = 0.5 * (przeszkoda10_y + przeszkoda12_y);
 
 				key[KEY_SPACE] = false;
 				redraw = true;
@@ -842,6 +898,8 @@ int main()
 				moneta4_y = (0.5 * SCREEN_H) + 100;
 				moneta5_x = 0.625 * SCREEN_W;
 				moneta5_y = 0.875 * SCREEN_H;
+				moneta6_x = 0.5 * (przeszkoda10_x + przeszkoda11_x);
+				moneta6_y = 0.5 * (przeszkoda10_y + przeszkoda12_y);
 
 				key[KEY_SPACE] = false;
 				redraw = true;
@@ -867,6 +925,8 @@ int main()
 				moneta4_y = (0.5 * SCREEN_H) + 100;
 				moneta5_x = 0.625 * SCREEN_W;
 				moneta5_y = 0.875 * SCREEN_H;
+				moneta6_x = 0.5 * (przeszkoda10_x + przeszkoda11_x);
+				moneta6_y = 0.5 * (przeszkoda10_y + przeszkoda12_y);
 
 				key[KEY_SPACE] = false;
 				redraw = true;
@@ -892,6 +952,8 @@ int main()
 				moneta4_y = (0.5 * SCREEN_H) + 100;
 				moneta5_x = 0.625 * SCREEN_W;
 				moneta5_y = 0.875 * SCREEN_H;
+				moneta6_x = 0.5 * (przeszkoda10_x + przeszkoda11_x);
+				moneta6_y = 0.5 * (przeszkoda10_y + przeszkoda12_y);
 
 				key[KEY_SPACE] = false;
 				redraw = true;
@@ -917,6 +979,8 @@ int main()
 				moneta4_y = (0.5 * SCREEN_H) + 100;
 				moneta5_x = 0.625 * SCREEN_W;
 				moneta5_y = 0.875 * SCREEN_H;
+				moneta6_x = 0.5 * (przeszkoda10_x + przeszkoda11_x);
+				moneta6_y = 0.5 * (przeszkoda10_y + przeszkoda12_y);
 
 				key[KEY_SPACE] = false;
 				redraw = true;
@@ -942,6 +1006,8 @@ int main()
 				moneta4_y = (0.5 * SCREEN_H) + 100;
 				moneta5_x = 0.625 * SCREEN_W;
 				moneta5_y = 0.875 * SCREEN_H;
+				moneta6_x = 0.5 * (przeszkoda10_x + przeszkoda11_x);
+				moneta6_y = 0.5 * (przeszkoda10_y + przeszkoda12_y);
 
 				key[KEY_SPACE] = false;
 				redraw = true;
@@ -967,13 +1033,24 @@ int main()
 				moneta4_y = (0.5 * SCREEN_H) + 100;
 				moneta5_x = 0.625 * SCREEN_W;
 				moneta5_y = 0.875 * SCREEN_H;
+				moneta6_x = 0.5 * (przeszkoda10_x + przeszkoda11_x);
+				moneta6_y = 0.5 * (przeszkoda10_y + przeszkoda12_y);
 
 				key[KEY_SPACE] = false;
 				redraw = true;
 			}
-			
-			
-			
+			if (ziem_x >= meta_x &&
+				ziem_x <= (meta_x + META_W) &&
+				ziem_y >= meta_y &&
+				ziem_y <= (meta_y + META_H))
+			{
+				
+				doexit = true;
+				break;
+				
+			}
+
+
 			redraw = true;
 		}
 		else if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
@@ -1039,11 +1116,15 @@ int main()
 			al_draw_bitmap(przeszkoda13, przeszkoda13_x, przeszkoda13_y, 0);
 			al_draw_bitmap(przeszkoda14, przeszkoda14_x, przeszkoda14_y, 0);
 			al_draw_bitmap(przeszkoda15, przeszkoda15_x, przeszkoda15_y, 0);
+
+			al_draw_bitmap(meta, meta_x, meta_y, 0);
+
 			al_draw_bitmap(moneta, moneta_x, moneta_y, 0);
 			al_draw_bitmap(moneta2, moneta2_x, moneta2_y, 0);
 			al_draw_bitmap(moneta3, moneta3_x, moneta3_y, 0);
 			al_draw_bitmap(moneta4, moneta4_x, moneta4_y, 0);
 			al_draw_bitmap(moneta5, moneta5_x, moneta5_y, 0);
+			al_draw_bitmap(moneta6, moneta6_x, moneta6_y, 0);
 			al_draw_textf(font, al_map_rgb(0, 0, 255), (SCREEN_W - 100), (10), ALLEGRO_ALIGN_CENTRE, "WYNIK: %d", points);
 
 			al_flip_display();
@@ -1066,11 +1147,15 @@ int main()
 	al_destroy_bitmap(przeszkoda13);
 	al_destroy_bitmap(przeszkoda14);
 	al_destroy_bitmap(przeszkoda15);
+	
+	al_destroy_bitmap(meta);
+	
 	al_destroy_bitmap(moneta);
 	al_destroy_bitmap(moneta2);
 	al_destroy_bitmap(moneta3);
 	al_destroy_bitmap(moneta4);
 	al_destroy_bitmap(moneta5);
+	al_destroy_bitmap(moneta6);
 	al_destroy_timer(timer);
 	al_destroy_font(font);
 	al_destroy_display(display);
